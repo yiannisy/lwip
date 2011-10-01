@@ -914,12 +914,16 @@ tcp_output(struct tcp_pcb *pcb)
     return ERR_OK;
   }
 
-#if TCP_CONGESTION_CONTROL
-  wnd = LWIP_MIN(pcb->snd_wnd, pcb->cwnd);
-#else
-  LWIP_DEBUGF(TCP_CWND_DEBUG, ("YIANNIS : tcp_output: ignoring congestion control\n"));
-  wnd = pcb->snd_wnd;
-#endif
+  //#if TCP_CONGESTION_CONTROL
+  if (pcb->congestion_control){
+    wnd = LWIP_MIN(pcb->snd_wnd, pcb->cwnd);
+  }
+  //#else
+  else{
+    LWIP_DEBUGF(TCP_CWND_DEBUG, ("YIANNIS : tcp_output: ignoring congestion control\n"));
+    wnd = pcb->snd_wnd;
+  }
+  //#endif
 
   seg = pcb->unsent;
 

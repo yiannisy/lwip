@@ -207,6 +207,10 @@ struct netconn {
 #endif /* LWIP_TCP */
   /** A callback function that is informed about events for this netconn */
   netconn_callback callback;
+#if LWIP_HERCULES
+  /** Hercules : Allow hook to enable/disable congestion control for a given flow */
+  u8_t congestion_control;
+#endif
 };
 
 /** Register an Network connection event */

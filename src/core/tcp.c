@@ -868,12 +868,13 @@ tcp_slowtmr(void)
           pcb->rtime = 0;
 
           /* Reduce congestion window and ssthresh. */
-#if TCP_CONGESTION_CONTROL
-          eff_wnd = LWIP_MIN(pcb->cwnd, pcb->snd_wnd);
-#else
-	  LWIP_DEBUGF(TCP_CWND_DEBUG, ("YIANNIS : tcp_slowtmr: ignoring congestion control\n"));
-	  eff_wnd = pcb->snd_wnd;
-#endif
+	  if(pcb->congestion_control){
+	    eff_wnd = LWIP_MIN(pcb->cwnd, pcb->snd_wnd);
+	  }
+	  else{
+	    LWIP_DEBUGF(TCP_CWND_DEBUG, ("YIANNIS : tcp_slowtmr: ignoring congestion control\n"));
+	    eff_wnd = pcb->snd_wnd;
+	  }
           pcb->ssthresh = eff_wnd >> 1;
           if (pcb->ssthresh < (pcb->mss << 1)) {
             pcb->ssthresh = (pcb->mss << 1);
@@ -1304,6 +1305,9 @@ tcp_alloc(u8_t prio)
 #endif /* LWIP_TCP_KEEPALIVE */
 
     pcb->keep_cnt_sent = 0;
+
+    /* enable congestion control by default */
+    pcb->congestion_control = 1;
   }
   return pcb;
 }

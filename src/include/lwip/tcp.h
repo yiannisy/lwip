@@ -279,6 +279,10 @@ struct tcp_pcb {
 
   /* KEEPALIVE counter */
   u8_t keep_cnt_sent;
+
+  /** Hercules : Hook to enable/disable congestion control for a given flow */
+  u8_t congestion_control;
+
 };
 
 struct tcp_pcb_listen {
@@ -331,6 +335,10 @@ void             tcp_err     (struct tcp_pcb *pcb, tcp_err_fn err);
 #define          tcp_nagle_disable(pcb)   ((pcb)->flags |= TF_NODELAY)
 #define          tcp_nagle_enable(pcb)    ((pcb)->flags &= ~TF_NODELAY)
 #define          tcp_nagle_disabled(pcb)  (((pcb)->flags & TF_NODELAY) != 0)
+
+#define          tcp_congestion_control_disable(pcb) ((pcb)->congestion_control = 0)
+#define          tcp_congestion_control_enable(pcb) ((pcb)->congestion_control = 1)
+#define          tcp_congestion_control_enabled(pcb) ((pcb)->congestion_control == 1)
 
 #if TCP_LISTEN_BACKLOG
 #define          tcp_accepted(pcb) do { \
